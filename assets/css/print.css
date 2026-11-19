@@ -1,0 +1,12 @@
+@page{size:A4 landscape;margin:12mm}
+*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#000;background:#fff;font-size:10px}
+.sheet{width:100%;max-width:1100px;margin:0 auto}h2{text-align:center;font-size:16px;font-weight:bold;margin:8px 0 18px}
+.meta{display:flex;gap:35px;margin-bottom:10px;font-size:11px}.report{width:100%;table-layout:auto;border-color:#000!important}
+.report th,.report td{border:1px solid #000!important;padding:6px 4px;font-size:9px;vertical-align:middle}
+.report th{font-weight:bold;background:#eee!important;print-color-adjust:exact}
+.notes{border:1px solid #000;min-height:48px;padding:7px;margin-top:12px;font-size:9px}.notes-content{font-size:9px;line-height:1.35;margin-top:3px}
+.signatures{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center;margin-top:22px;font-size:11px}
+.signature-space{height:48px}.print-actions{max-width:1100px;margin:20px auto}
+@media print{.print-actions{display:none!important}.sheet{max-width:none}.report{break-inside:avoid}.signatures{break-inside:avoid}}
+
+.paraf-line{display:inline-block;min-width:42px;height:22px;border-bottom:1px solid #222}
