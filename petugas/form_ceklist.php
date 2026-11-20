@@ -12,7 +12,7 @@ $jam=$_GET['jam']??''; if(!in_array($jam,['08:00','11:00','14:00'],true))$jam=''
 $existing=[]; $namaTersimpan=''; if($harian){$hid=(int)$harian['id'];$s=$conn->prepare('SELECT indikator_id,status,foto_bukti,nama_petugas FROM ceklist_detail WHERE ceklist_harian_id=? AND jam_cek=?');$s->bind_param('is',$hid,$jam);$s->execute();foreach(stmt_rows($s) as $x){$existing[(int)$x['indikator_id']]=$x;if(!$namaTersimpan)$namaTersimpan=$x['nama_petugas'];}}
 $isDone=$jam!=='' && in_array($jam,$done,true); $page_title='Form Ceklist'; include __DIR__.'/../includes/header.php';
 ?>
-<div class="mb-3"><a href="<?= e(base_url('petugas/index.php')) ?>" class="text-decoration-none"><i class="bi bi-arrow-left"></i> Daftar ruangan</a></div>
+\n<div class="mb-3"><a href="<?= e(base_url('petugas/index.php')) ?>" class="text-decoration-none"><i class="bi bi-arrow-left"></i> Daftar ruangan</a></div>
 <h1 class="h3 page-heading"><?= e($room['nama_ruangan']) ?></h1><p class="muted"><?= e(tanggal_indo($tanggal)) ?> · Silakan pilih jam pengecekan</p>
 <div class="d-flex gap-2 mb-3 flex-wrap justify-content-center"><?php foreach(['08:00','11:00','14:00'] as $j): ?><a class="btn <?= $jam===$j?'btn-primary':'btn-outline-primary' ?> position-relative" href="<?= e(base_url('petugas/form_ceklist.php?ruangan='.$rid.'&jam='.urlencode($j))) ?>"><?= e($j) ?> <?php if(in_array($j,$done,true)): ?><i class="bi bi-check-circle-fill ms-1"></i><?php endif; ?></a><?php endforeach; ?></div>
 <?php if($jam===''): ?>

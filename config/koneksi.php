@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
+date_default_timezone_set('Asia/Jakarta'); // Pastikan tanggal ceklist mengikuti WIB (Indonesia).
 
 $db_host = 'localhost';
 $db_user = 'root';
