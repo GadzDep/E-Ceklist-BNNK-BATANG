@@ -1,17 +1,17 @@
 <?php
 require_once __DIR__.'/../config/koneksi.php'; require_role(['petugas']);
 if($_SERVER['REQUEST_METHOD']!=='POST')redirect('petugas/index.php'); verify_csrf();
-$rid=(int)($_POST['ruangan_id']??0);$jam=$_POST['jam_cek']??'';$validJam=['08:00','11:00','14:00'];
-if($rid<1||!in_array($jam,$validJam,true))redirect('petugas/index.php');
+$rid=(int)($_POST['ruangan_id']??0);$jam=$_POST['jam_cek']??'';
+if($rid<1)redirect('petugas/index.php');$scheduleStmt=$conn->prepare('SELECT jam_cek FROM jadwal_jam_ruangan WHERE ruangan_id=?');$scheduleStmt->bind_param('i',$rid);$scheduleStmt->execute();$validJam=array_column(stmt_rows($scheduleStmt),'jam_cek');if(!$validJam)$validJam=['08:00','11:00','14:00'];if(!in_array($jam,$validJam,true))redirect('petugas/index.php');
 $s=$conn->prepare('SELECT id FROM ruangan WHERE id=?');$s->bind_param('i',$rid);$s->execute();if(!$s->get_result()->fetch_assoc())redirect('petugas/index.php');
 $userId=(int)($_SESSION['user']['id']??0);$s=$conn->prepare("SELECT nama_lengkap FROM users WHERE id=? AND role='petugas' LIMIT 1");$s->bind_param('i',$userId);$s->execute();$namaPetugas=trim((string)($s->get_result()->fetch_assoc()['nama_lengkap']??''));if($namaPetugas===''||mb_strlen($namaPetugas)>120)exit('Nama akun petugas tidak valid. Silakan hubungi admin.');
 $statuses=$_POST['status']??[];if(!is_array($statuses)||!$statuses)redirect('petugas/form_ceklist.php?ruangan='.$rid);
-$note=trim($_POST['catatan_temuan']??'');$moved=[];$conn->begin_transaction();
+$note=trim($_POST['catatan_temuan']??'');$noPolisi=trim($_POST['no_polisi']??'');if(mb_strlen($noPolisi)>40)$noPolisi=mb_substr($noPolisi,0,40);$moved=[];$conn->begin_transaction();
 try{
- $date=date('Y-m-d');$s=$conn->prepare('INSERT INTO ceklist_harian (ruangan_id,tanggal,catatan_temuan) VALUES (?,?,?) ON DUPLICATE KEY UPDATE catatan_temuan=VALUES(catatan_temuan)');$s->bind_param('iss',$rid,$date,$note);$s->execute();
+ $date=date('Y-m-d');$s=$conn->prepare('INSERT INTO ceklist_harian (ruangan_id,tanggal,catatan_temuan,no_polisi) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE catatan_temuan=VALUES(catatan_temuan),no_polisi=VALUES(no_polisi)');$s->bind_param('isss',$rid,$date,$note,$noPolisi);$s->execute();
  $s=$conn->prepare('SELECT id FROM ceklist_harian WHERE ruangan_id=? AND tanggal=?');$s->bind_param('is',$rid,$date);$s->execute();$hid=(int)$s->get_result()->fetch_assoc()['id'];
  $check=$conn->prepare('SELECT COUNT(*) total FROM ceklist_detail WHERE ceklist_harian_id=? AND jam_cek=?');$check->bind_param('is',$hid,$jam);$check->execute();$isEdit=(int)$check->get_result()->fetch_assoc()['total']>0;
- $valid=[];$s=$conn->prepare('SELECT id FROM indikator_ruangan WHERE ruangan_id=?');$s->bind_param('i',$rid);$s->execute();foreach(stmt_rows($s) as $x)$valid[(int)$x['id']]=true;
+ $valid=[];$s=$conn->prepare('SELECT id FROM indikator_ruangan WHERE ruangan_id=? AND is_active=1');$s->bind_param('i',$rid);$s->execute();foreach(stmt_rows($s) as $x)$valid[(int)$x['id']]=true;
  if(count($statuses)!==count($valid))throw new RuntimeException('Semua indikator wajib dipilih.');
  $pid=(int)$_SESSION['user']['id'];
  $up=$conn->prepare("INSERT INTO ceklist_detail (ceklist_harian_id,jam_cek,indikator_id,status,foto_bukti,nama_petugas,petugas_id) VALUES (?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE status=VALUES(status),foto_bukti=IF(VALUES(status)='Bersih/Rapi',NULL,COALESCE(VALUES(foto_bukti),foto_bukti)),nama_petugas=VALUES(nama_petugas),petugas_id=VALUES(petugas_id),created_at=CURRENT_TIMESTAMP");

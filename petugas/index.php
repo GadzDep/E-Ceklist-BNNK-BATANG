@@ -7,6 +7,12 @@ function ikon_ruangan(string $nama): string {
     return match (true) {
         str_contains($n,'pantry') => 'bi-cup-hot',
         str_contains($n,'toilet') => 'bi-droplet',
+        str_contains($n,'pos satpam') => 'bi-shield-lock',
+        str_contains($n,'kendaraan') => 'bi-car-front',
+        str_contains($n,'klinik') || str_contains($n,'konseling') => 'bi-heart-pulse',
+        str_contains($n,'mushola') || str_contains($n,'musala') => 'bi-moon-stars',
+        str_contains($n,'halaman') => 'bi-tree',
+        str_contains($n,'selasar') || str_contains($n,'ruang tengah') => 'bi-grid-3x3-gap',
         str_contains($n,'lobby') => 'bi-door-open',
         str_contains($n,'rapat') => 'bi-people',
         str_contains($n,'tamu') => 'bi-person-workspace',

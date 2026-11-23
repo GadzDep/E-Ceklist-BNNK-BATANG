@@ -2,11 +2,11 @@
 require_once __DIR__.'/../config/koneksi.php';require_role(['admin']);
 $rooms=$conn->query('SELECT * FROM ruangan ORDER BY nama_ruangan')->fetch_all(MYSQLI_ASSOC);$rid=(int)($_GET['ruangan']??($rooms[0]['id']??0));
 if($_SERVER['REQUEST_METHOD']==='POST'){verify_csrf();$act=$_POST['action']??'';$rid=(int)($_POST['ruangan_id']??0);
- if($act==='add'){$name=trim($_POST['nama_indikator']??'');$order=(int)($_POST['urutan']??1);if($name){$s=$conn->prepare('INSERT INTO indikator_ruangan(ruangan_id,nama_indikator,urutan) VALUES(?,?,?)');$s->bind_param('isi',$rid,$name,$order);$s->execute();}}
+ if($act==='add'){$name=trim($_POST['nama_indikator']??'');$order=(int)($_POST['urutan']??1);if($name){$s=$conn->prepare('INSERT INTO indikator_ruangan(ruangan_id,nama_indikator,urutan,is_active) VALUES(?,?,?,1)');$s->bind_param('isi',$rid,$name,$order);$s->execute();}}
  if($act==='delete'){$id=(int)$_POST['id'];$s=$conn->prepare('DELETE FROM indikator_ruangan WHERE id=? AND ruangan_id=?');$s->bind_param('ii',$id,$rid);$s->execute();}
  redirect('admin/kelola_indikator.php?ruangan='.$rid);
 }
-$s=$conn->prepare('SELECT * FROM indikator_ruangan WHERE ruangan_id=? ORDER BY urutan,id');$s->bind_param('i',$rid);$s->execute();$items=stmt_rows($s);$page_title='Kelola Indikator';include __DIR__.'/../includes/header.php';
+$s=$conn->prepare('SELECT * FROM indikator_ruangan WHERE ruangan_id=? AND is_active=1 ORDER BY urutan,id');$s->bind_param('i',$rid);$s->execute();$items=stmt_rows($s);$page_title='Kelola Indikator';include __DIR__.'/../includes/header.php';
 ?>
 <h1 class="h3 page-heading">Kelola Indikator</h1><p class="muted">Atur item pemeriksaan sesuai ruangan.</p>
 <form method="get" class="card p-3 mb-3"><label class="form-label">Pilih ruangan</label><select class="form-select" name="ruangan" onchange="this.form.submit()"><?php foreach($rooms as $r): ?><option value="<?= (int)$r['id'] ?>" <?= $rid===(int)$r['id']?'selected':'' ?>><?= e($r['nama_ruangan']) ?></option><?php endforeach; ?></select></form>
