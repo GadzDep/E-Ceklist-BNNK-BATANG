@@ -30,3 +30,12 @@ Semua password: `123456`
 - Saat membuka jam yang sudah pernah diisi, sistem menampilkan konfirmasi dengan pilihan **Edit Ceklist** atau **Oke**. Data sebelumnya (status, foto, nama petugas, dan catatan) dimuat kembali; foto lama tetap tersimpan jika tidak diganti.
 - Setelah penyimpanan berhasil, muncul notifikasi keberhasilan.
 - Kolom paraf pada formulir cetak kini berupa ruang paraf, bukan nama petugas.
+
+
+### Upgrade v3 - Nama User Fleksibel
+Untuk database yang sudah digunakan, jalankan `database/upgrade_v3.sql` satu kali melalui phpMyAdmin atau terminal MySQL. Admin dapat mengubah nama Petugas, PJ Sarpras, dan Kasubbag Umum dari menu **Kelola Nama User**. Nama ceklist dan verifikasi diambil dari database, bukan input manual.
+
+## Foto bukti pada laporan cetak
+- Foto bukti ditampilkan pada kolom indikator dan baris jam yang sama dengan saat foto diunggah (08:00, 11:00, atau 14:00), sehingga foto antar-jam tidak tertukar.
+- Laporan cetak menampilkan foto hanya untuk indikator berstatus **Kotor/Perlu Tindakan** yang memiliki file foto bukti tersimpan.
+- Jika status indikator diedit menjadi **Bersih/Rapi**, foto bukti pada slot jam tersebut dihapus dari record agar tidak tampil lagi sebagai bukti kondisi yang sudah bersih.

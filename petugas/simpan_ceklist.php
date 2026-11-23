@@ -4,7 +4,7 @@ if($_SERVER['REQUEST_METHOD']!=='POST')redirect('petugas/index.php'); verify_csr
 $rid=(int)($_POST['ruangan_id']??0);$jam=$_POST['jam_cek']??'';$validJam=['08:00','11:00','14:00'];
 if($rid<1||!in_array($jam,$validJam,true))redirect('petugas/index.php');
 $s=$conn->prepare('SELECT id FROM ruangan WHERE id=?');$s->bind_param('i',$rid);$s->execute();if(!$s->get_result()->fetch_assoc())redirect('petugas/index.php');
-$namaPetugas=trim($_POST['nama_petugas']??'');if($namaPetugas===''||mb_strlen($namaPetugas)>120)exit('Nama petugas wajib diisi (maksimal 120 karakter).');
+$userId=(int)($_SESSION['user']['id']??0);$s=$conn->prepare("SELECT nama_lengkap FROM users WHERE id=? AND role='petugas' LIMIT 1");$s->bind_param('i',$userId);$s->execute();$namaPetugas=trim((string)($s->get_result()->fetch_assoc()['nama_lengkap']??''));if($namaPetugas===''||mb_strlen($namaPetugas)>120)exit('Nama akun petugas tidak valid. Silakan hubungi admin.');
 $statuses=$_POST['status']??[];if(!is_array($statuses)||!$statuses)redirect('petugas/form_ceklist.php?ruangan='.$rid);
 $note=trim($_POST['catatan_temuan']??'');$moved=[];$conn->begin_transaction();
 try{
@@ -14,7 +14,7 @@ try{
  $valid=[];$s=$conn->prepare('SELECT id FROM indikator_ruangan WHERE ruangan_id=?');$s->bind_param('i',$rid);$s->execute();foreach(stmt_rows($s) as $x)$valid[(int)$x['id']]=true;
  if(count($statuses)!==count($valid))throw new RuntimeException('Semua indikator wajib dipilih.');
  $pid=(int)$_SESSION['user']['id'];
- $up=$conn->prepare("INSERT INTO ceklist_detail (ceklist_harian_id,jam_cek,indikator_id,status,foto_bukti,nama_petugas,petugas_id) VALUES (?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE status=VALUES(status),foto_bukti=COALESCE(VALUES(foto_bukti),foto_bukti),nama_petugas=VALUES(nama_petugas),petugas_id=VALUES(petugas_id),created_at=CURRENT_TIMESTAMP");
+ $up=$conn->prepare("INSERT INTO ceklist_detail (ceklist_harian_id,jam_cek,indikator_id,status,foto_bukti,nama_petugas,petugas_id) VALUES (?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE status=VALUES(status),foto_bukti=IF(VALUES(status)='Bersih/Rapi',NULL,COALESCE(VALUES(foto_bukti),foto_bukti)),nama_petugas=VALUES(nama_petugas),petugas_id=VALUES(petugas_id),created_at=CURRENT_TIMESTAMP");
  foreach($statuses as $key=>$status){$iid=(int)$key;if(!isset($valid[$iid])||!in_array($status,['Bersih/Rapi','Kotor/Perlu Tindakan'],true))throw new RuntimeException('Data indikator tidak valid.');
   $photo=null;$f=$_FILES['foto_bukti']??null;
   $oldPhotoStmt=$conn->prepare('SELECT foto_bukti FROM ceklist_detail WHERE ceklist_harian_id=? AND jam_cek=? AND indikator_id=?');$oldPhotoStmt->bind_param('isi',$hid,$jam,$iid);$oldPhotoStmt->execute();$oldPhoto=$oldPhotoStmt->get_result()->fetch_assoc()['foto_bukti']??null;

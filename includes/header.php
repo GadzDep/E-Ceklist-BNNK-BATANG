@@ -21,15 +21,17 @@ $page_title = $page_title ?? 'E-Ceklist BNNK Batang';
 .choice{display:flex;gap:10px;flex-wrap:wrap}.choice label{flex:1;min-width:145px;text-align:center;padding:13px 10px;border:1px solid rgba(125,125,165,.2);border-radius:16px;font-weight:600;cursor:pointer;background:rgba(255,255,255,.82);transition:.18s}.choice input{position:absolute;opacity:0}.choice label:has(input:checked){background:linear-gradient(135deg,#174889,#0B2E6D);color:#fff;border-color:transparent;box-shadow:0 7px 18px rgba(11,46,109,.16)}
 .table{--bs-table-bg:transparent}.table thead th{color:#686981;font-size:.82rem;text-transform:uppercase;letter-spacing:.035em}footer{color:#85879a!important}.form-text{color:#85879a}.photo-preview{max-width:150px;max-height:110px;object-fit:cover;border-radius:13px;border:1px solid #fff;box-shadow:0 5px 15px #5552}
 @media(max-width:575.98px){main.container{padding-top:1.2rem!important}.card{border-radius:23px}.page-heading{font-size:1.5rem}.indicator-card{padding:15px}.choice label{min-width:100%;}.navbar-brand{font-size:.95rem}.bnn-logo{width:36px;height:36px}.navbar-collapse{padding:.6rem 0 .25rem}.navbar-nav{align-items:stretch!important}.navbar .nav-link{padding:.7rem .85rem}.navbar-text{padding:.5rem .85rem!important;margin:0!important}}
+@media(min-width:992px){.navbar-toggler{display:none!important}.navbar-collapse{flex-grow:1}.navbar-nav{width:100%;justify-content:flex-end;align-items:center!important;gap:4px}.navbar .nav-link{white-space:nowrap}.navbar-user-chip{display:inline-flex!important;align-items:center;gap:8px;margin-right:10px!important;padding:.48rem .8rem!important;border-radius:999px;background:linear-gradient(135deg,#eaf1fb,#f5f8fd);border:1px solid rgba(11,46,109,.12);color:#0B2E6D!important;font-weight:700!important;font-size:.86rem}.navbar-user-chip i{color:#5275a8}}
+.navbar-user-chip{display:inline-flex;align-items:center;gap:7px;width:max-content;max-width:100%;border-radius:12px;background:rgba(11,46,109,.06);border:1px solid rgba(11,46,109,.09);color:#0B2E6D!important;font-weight:700!important;font-size:.88rem;line-height:1.35;overflow-wrap:anywhere}
 </style>
 </head><body>
-<nav class="navbar navbar-dark">
+<nav class="navbar navbar-dark navbar-expand-lg">
 <div class="container"><a class="navbar-brand d-flex align-items-center gap-2" href="<?= e(base_url(is_logged_in()?dashboard_path():'index.php')) ?>"><img src="https://upload.wikimedia.org/wikipedia/commons/c/cf/Logo_BNN.png" class="bnn-logo" alt="Logo BNN" onerror="this.style.display='none'"><span>E-Ceklist BNNK Batang</span></a>
 <?php if(is_logged_in()): ?><button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="Buka menu navigasi"><span class="navbar-toggler-icon"></span></button><?php endif; ?>
 <div class="<?= is_logged_in() ? 'collapse navbar-collapse' : 'd-none' ?>" id="navMain"><div class="navbar-nav ms-auto align-items-lg-center">
-<?php if(is_logged_in()): ?><span class="navbar-text text-white me-lg-3"><?= e($_SESSION['user']['nama_lengkap']) ?></span>
+<?php if(is_logged_in()): ?><span class="navbar-text navbar-user-chip"><i class="bi bi-person-circle"></i><span><?= e($_SESSION['user']['nama_lengkap']) ?></span></span>
 <a class="nav-link" href="<?= e(base_url(dashboard_path())) ?>">Dashboard</a>
-<?php if(current_role()==='admin'): ?><a class="nav-link" href="<?= e(base_url('admin/kelola_indikator.php')) ?>">Indikator</a><?php endif; ?>
+<?php if(current_role()==='admin'): ?><a class="nav-link" href="<?= e(base_url('admin/kelola_indikator.php')) ?>">Indikator</a><a class="nav-link" href="<?= e(base_url('admin/kelola_nama_user.php')) ?>">Kelola Nama User</a><?php endif; ?>
 <a class="nav-link" href="<?= e(base_url('auth/logout.php')) ?>">Keluar</a>
 <?php endif; ?></div></div></div></nav>
 <main class="container py-4">
