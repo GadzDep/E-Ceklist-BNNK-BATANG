@@ -7,7 +7,9 @@ USE db_ceklist;
 
 SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS ceklist_detail;
+DROP TABLE IF EXISTS ceklist_harian_kendaraan;
 DROP TABLE IF EXISTS ceklist_harian;
+DROP TABLE IF EXISTS kendaraan;
 DROP TABLE IF EXISTS indikator_ruangan;
 DROP TABLE IF EXISTS ruangan;
 DROP TABLE IF EXISTS users;
@@ -42,6 +44,8 @@ CREATE TABLE ceklist_harian (
  tanggal DATE NOT NULL,
  no_polisi VARCHAR(40) NULL,
  catatan_temuan TEXT NULL,
+ catatan_pj_sarpras TEXT NULL,
+ catatan_kasubbag_umum TEXT NULL,
  verif_pj_sarpras TINYINT(1) NOT NULL DEFAULT 0,
  waktu_verif_pj DATETIME NULL,
  nama_verifikator_pj VARCHAR(120) NULL,
@@ -52,17 +56,28 @@ CREATE TABLE ceklist_harian (
  CONSTRAINT fk_harian_ruangan FOREIGN KEY (ruangan_id) REFERENCES ruangan(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+CREATE TABLE kendaraan (id INT AUTO_INCREMENT PRIMARY KEY, nama VARCHAR(60) NOT NULL UNIQUE) ENGINE=InnoDB;
+INSERT INTO kendaraan (id,nama) VALUES (1,'Kendaraan 1'),(2,'Kendaraan 2'),(3,'Kendaraan 3');
+
+CREATE TABLE ceklist_harian_kendaraan (
+ ceklist_harian_id INT NOT NULL, kendaraan_id INT NOT NULL, no_polisi VARCHAR(40) NULL,
+ PRIMARY KEY (ceklist_harian_id,kendaraan_id),
+ CONSTRAINT fk_daily_vehicle_daily FOREIGN KEY (ceklist_harian_id) REFERENCES ceklist_harian(id) ON DELETE CASCADE,
+ CONSTRAINT fk_daily_vehicle_vehicle FOREIGN KEY (kendaraan_id) REFERENCES kendaraan(id)
+) ENGINE=InnoDB;
+
 CREATE TABLE ceklist_detail (
  id INT AUTO_INCREMENT PRIMARY KEY,
  ceklist_harian_id INT NOT NULL,
+ kendaraan_id INT NOT NULL DEFAULT 0,
  jam_cek VARCHAR(5) NOT NULL,
  indikator_id INT NOT NULL,
- status ENUM('Bersih/Rapi','Kotor/Perlu Tindakan') NOT NULL,
+ status ENUM('Ya','Tidak') NOT NULL,
  foto_bukti VARCHAR(255) NULL,
  nama_petugas VARCHAR(120) NOT NULL,
  petugas_id INT NOT NULL,
  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
- UNIQUE KEY unik_detail_shift_indikator (ceklist_harian_id,jam_cek,indikator_id),
+ UNIQUE KEY unik_detail_vehicle_shift_indicator (ceklist_harian_id,kendaraan_id,jam_cek,indikator_id),
  CONSTRAINT fk_detail_harian FOREIGN KEY (ceklist_harian_id) REFERENCES ceklist_harian(id) ON DELETE CASCADE,
  CONSTRAINT fk_detail_indikator FOREIGN KEY (indikator_id) REFERENCES indikator_ruangan(id) ON DELETE CASCADE,
  CONSTRAINT fk_detail_petugas FOREIGN KEY (petugas_id) REFERENCES users(id)

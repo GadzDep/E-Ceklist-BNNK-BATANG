@@ -31,3 +31,16 @@ Semua password: `123456`
 - Saat membuka jam yang sudah pernah diisi, sistem menampilkan konfirmasi dengan pilihan **Edit Ceklist** atau **Oke**. Data sebelumnya (status, foto, nama petugas, dan catatan) dimuat kembali; foto lama tetap tersimpan jika tidak diganti.
 - Setelah penyimpanan berhasil, muncul notifikasi keberhasilan.
 - Kolom paraf pada formulir cetak kini berupa ruang paraf, bukan nama petugas.
+
+
+### Catatan verifikasi terbaru
+- Form petugas tidak lagi memiliki catatan petugas.
+- PJ Sarpras dan Kasubbag Umum masing-masing dapat menambahkan catatan ketika melakukan verifikasi.
+- Catatan verifikator tampil pada detail dan laporan cetak.
+- Database lama akan ditambahkan kolom catatan verifikator secara otomatis saat aplikasi dibuka; database tidak perlu diimpor ulang.
+
+## Revisi status dan kendaraan (24 November 2026)
+- Status pemeriksaan menggunakan label `Ya` dan `Tidak`. Database lama akan dimigrasikan otomatis saat aplikasi dibuka.
+- Kendaraan Dinas memiliki pilihan Kendaraan 1, 2, dan 3; masing-masing menyimpan nomor polisi, status, foto, dan jam pemeriksaan terpisah. Ketiga kendaraan dapat diisi pada jam yang sama.
+- Halaman verifikator memiliki pilihan kendaraan untuk memeriksa data masing-masing; laporan cetak menampilkan ketiga kendaraan sebagai bagian terpisah.
+- Instalasi baru tetap menggunakan satu file `database/db_ceklist.sql`. Database lama tidak perlu di-import ulang, migrasi otomatis berjalan pada akses aplikasi.
