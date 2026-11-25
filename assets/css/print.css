@@ -1,14 +1,97 @@
-@page{size:A4 landscape;margin:12mm}
-*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#000;background:#fff;font-size:10px}
-.sheet{width:100%;max-width:1100px;margin:0 auto}h2{text-align:center;font-size:16px;font-weight:bold;margin:8px 0 18px}
-.meta{display:flex;gap:35px;margin-bottom:10px;font-size:11px}.report{width:100%;table-layout:auto;border-color:#000!important}
-.report th,.report td{border:1px solid #000!important;padding:6px 4px;font-size:9px;vertical-align:middle}
-.report th{font-weight:bold;background:#eee!important;print-color-adjust:exact}
-.notes{border:1px solid #000;min-height:48px;padding:7px;margin-top:12px;font-size:9px}.notes-content{font-size:9px;line-height:1.35;margin-top:3px}
-.signatures{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center;margin-top:22px;font-size:11px}
-.signature-space{height:48px}.print-actions{max-width:1100px;margin:20px auto}
-@media print{.print-actions{display:none!important}.sheet{max-width:none}.report{break-inside:avoid}.signatures{break-inside:avoid}}
-
-.paraf-line{display:inline-block;min-width:42px;height:22px;border-bottom:1px solid #222}
-.evidence-section{margin-top:12px}.evidence-title{font-size:10px;font-weight:bold;margin:0 0 7px}.evidence-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.evidence-card{border:1px solid #777;padding:6px;display:flex;gap:8px;align-items:flex-start;page-break-inside:avoid;break-inside:avoid}.evidence-photo{width:125px;height:95px;object-fit:contain;border:1px solid #aaa;padding:2px;flex-shrink:0}.evidence-caption{font-size:9px;line-height:1.4}.evidence-caption strong{display:block;margin-bottom:3px}
-@media print{.evidence-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.evidence-card{break-inside:avoid;page-break-inside:avoid}.evidence-photo{width:110px;height:85px}}
+/* Format formulir cetak mengikuti lembar checklist contoh. */
+@page { size: A4 landscape; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #fff; color: #000; }
+body { font-family: Arial, Helvetica, sans-serif; font-size: 10px; }
+.sheet { width: 100%; max-width: 1100px; margin: 0 auto; padding: 6mm 7mm 5mm; }
+.document-heading { text-align: center; line-height: 1.25; padding: 0 0 3px; }
+.document-heading h1 { margin: 0; font-size: 12px; line-height: 1.25; font-weight: 700; }
+.document-subtitle, .document-agency { font-size: 12px; line-height: 1.25; font-weight: 700; }
+.date-row { display: grid; grid-template-columns: 48px 1fr; min-height: 24px; align-items: center; border-top: 1px solid #777; border-bottom: 1px solid #777; margin: 3px 0 0; font-size: 10px; }
+.date-row strong { font-weight: 400; }
+.report { width: 100%; border-collapse: collapse; table-layout: fixed; margin: 0; }
+.report th, .report td { border: 1px solid #000; padding: 4px 3px; font-size: 9px; line-height: 1.15; text-align: center; vertical-align: middle; }
+.report th { font-weight: 700; }
+.report thead th { background: #fff; }
+.report .col-no { width: 5%; }
+.report .col-item { width: 27%; }
+.report .col-paraf { width: 15%; }
+.report .jam-cek-heading { height: 18px; }
+.report .time-heading { height: 18px; }
+.report tbody td { height: 27px; }
+.report .item-name { text-align: left; padding-left: 5px; }
+.report .report-indicator-cell { font-size: 11px; font-weight: 700; }
+.vehicle-report-section { margin: 0 0 5px; break-inside: avoid; page-break-inside: avoid; }
+.vehicle-report-section h3 { margin: 5px 0 3px; font-size: 10px; font-weight: 700; }
+.evidence-section { margin: 7px 0 0; }
+.evidence-title { margin: 0 0 4px; font-size: 10px; font-weight: 700; }
+.evidence-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+.evidence-card { display: flex; gap: 6px; align-items: flex-start; padding: 4px; border: 1px solid #777; break-inside: avoid; page-break-inside: avoid; }
+.evidence-photo { width: 76px; height: 58px; object-fit: contain; border: 1px solid #aaa; padding: 1px; flex: 0 0 auto; }
+.evidence-caption { font-size: 8px; line-height: 1.3; }
+.evidence-caption strong { display: block; margin-bottom: 2px; }
+.notes { margin-top: 7px; min-height: 42px; padding: 4px; border: 1px solid #777; font-size: 9px; break-inside: avoid; page-break-inside: avoid; }
+.notes-content { margin-top: 3px; min-height: 23px; font-size: 9px; line-height: 1.25; }
+.signatures { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; text-align: center; font-size: 9px; break-inside: avoid; page-break-inside: avoid; }
+.signatures > div { min-height: 65px; }
+.signatures strong, .signatures span { display: block; font-weight: 600; }
+.signatures span { margin-top: 2px; }
+.signature-space { height: 35px; }
+/* Menu tindakan pada halaman pratinjau cetak. */
+.print-actions {
+  width: calc(100% - 32px);
+  max-width: 1100px;
+  margin: 22px auto 18px;
+  padding: 17px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  background: linear-gradient(115deg, #ffffff 0%, #f5f8ff 100%);
+  border: 1px solid #dce5f1;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(25, 48, 79, .09);
+}
+.print-actions-copy { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.print-actions-eyebrow { color: #647b98; font-size: 9px; font-weight: 800; letter-spacing: 1.25px; }
+.print-actions-copy strong { color: #182d49; font-size: 17px; line-height: 1.25; }
+.print-actions-copy > span:last-child { color: #68788e; font-size: 11px; line-height: 1.45; }
+.print-actions-buttons { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex: 0 0 auto; }
+.action-btn {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+}
+.action-btn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
+.action-btn:hover { transform: translateY(-1px); }
+.action-btn:focus-visible { outline: 3px solid rgba(57, 119, 201, .28); outline-offset: 3px; }
+.action-print { color: #fff; background: #245b9c; box-shadow: 0 4px 10px rgba(36, 91, 156, .2); }
+.action-print:hover { color: #fff; background: #1c4c85; box-shadow: 0 6px 14px rgba(36, 91, 156, .25); }
+.action-exit { color: #34465d; background: #fff; border-color: #d4deea; }
+.action-exit:hover { color: #1e344f; background: #edf3fa; border-color: #b8c9dc; }
+@media screen and (max-width: 600px) {
+  .print-actions { width: calc(100% - 20px); margin: 10px auto 14px; padding: 15px; align-items: stretch; flex-direction: column; gap: 13px; }
+  .print-actions-copy strong { font-size: 16px; }
+  .print-actions-buttons { display: grid; grid-template-columns: minmax(0, 1fr) auto; justify-content: stretch; }
+  .action-btn { min-height: 43px; padding: 0 12px; }
+}
+@media screen { body { background: #eee; } .sheet { background: #fff; min-height: 190mm; box-shadow: 0 1px 8px #bbb; } }
+@media print {
+  html, body { width: 100%; margin: 0 !important; padding: 0 !important; }
+  .print-actions { display: none !important; }
+  .sheet { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 6mm 7mm 5mm !important; box-shadow: none !important; }
+  .report th, .report td { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .vehicle-report-section, .evidence-card, .notes, .signatures { break-inside: avoid; page-break-inside: avoid; }
+}

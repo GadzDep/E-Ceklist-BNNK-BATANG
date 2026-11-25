@@ -12,12 +12,49 @@ $signatureNames=['petugas'=>'','pj_sarpras'=>'','kasubbag_umum'=>''];$s=$conn->p
 $printGroups=$isVehicle?$vehicles:[['id'=>0,'nama'=>'']];$evidencePhotos=[];foreach($printGroups as $vg){$vid=(int)$vg['id'];foreach($times as $photoTime)foreach($items as $photoItem){$photoEntry=$details[$vid][$photoTime][(int)$photoItem['id']]??null;$photoPath=$photoEntry['foto_bukti']??'';if(($photoEntry['status']??'')==='Tidak'&&$photoPath&&is_file(__DIR__.'/../'.$photoPath))$evidencePhotos[]=['vehicle'=>$vg['nama'],'plate'=>$plates[$vid]??'','time'=>$photoTime,'indicator'=>$photoItem['nama_indikator'],'path'=>$photoPath];}}
 $from=$_GET['from']??'';if(current_role()==='petugas')$backUrl='../petugas/index.php';elseif($from==='detail')$backUrl='../verifikator/detail_ceklist.php?ruangan='.$rid.'&tanggal='.urlencode($date);else $backUrl='../verifikator/dashboard.php?tanggal='.urlencode($date);
 $months=[1=>'Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-function print_table($items,$times,$details,$vid){ ?><table class="table table-bordered text-center align-middle report"><thead><tr><th>No</th><th>Item Pemeriksaan</th><?php foreach($times as $jam): ?><th><?= e($jam) ?></th><?php endforeach; ?><th>Paraf Petugas</th></tr></thead><tbody><?php foreach($items as $index=>$it): ?><tr><td><?= $index+1 ?></td><td class="text-start"><?= e($it['nama_indikator']) ?></td><?php foreach($times as $jam):$entry=$details[$vid][$jam][(int)$it['id']]??null;$status=$entry['status']??''; ?><td class="report-indicator-cell"><?= $status==='Ya'?'✓':($status==='Tidak'?'✗':'-') ?></td><?php endforeach; ?><td><?= array_filter(array_map(fn($j)=>$details[$vid][$j][(int)$it['id']]??null,$times))?'✓':'-' ?></td></tr><?php endforeach; ?></tbody></table><?php }
+function print_table($items,$times,$details,$vid){ ?>
+<table class="report">
+<thead>
+<tr><th rowspan="2" class="col-no">No</th><th rowspan="2" class="col-item">Item Pemeriksaan</th><th colspan="<?= count($times) ?>" class="jam-cek-heading">Jam Cek</th><th rowspan="2" class="col-paraf">Paraf Petugas</th></tr>
+<tr><?php foreach($times as $jam): ?><th class="time-heading"><?= e($jam) ?></th><?php endforeach; ?></tr>
+</thead>
+<tbody><?php foreach($items as $index=>$it): ?><tr><td><?= $index+1 ?></td><td class="item-name"><?= e($it['nama_indikator']) ?></td><?php foreach($times as $jam):$entry=$details[$vid][$jam][(int)$it['id']]??null;$status=$entry['status']??''; ?><td class="report-indicator-cell"><?= $status==='Ya'?'✓':($status==='Tidak'?'✗':'') ?></td><?php endforeach; ?><td><?= array_filter(array_map(fn($j)=>$details[$vid][$j][(int)$it['id']]??null,$times))?'✓':'' ?></td></tr><?php endforeach; ?></tbody>
+</table><?php }
+
 ?>
-<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Formulir Ceklist</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" href="../assets/css/print.css"><style>.paraf-mark{display:inline-block;min-width:28px;font-family:"Segoe Script","Brush Script MT",cursive;font-style:italic;font-weight:bold;font-size:17px;letter-spacing:1px;transform:rotate(-8deg);color:#172554}.staff-signature{font-weight:600;font-style:italic;display:flex;align-items:end;justify-content:center;padding-bottom:3px}.signatures span{display:block;font-weight:600;margin-top:2px}.signature-space{height:48px}.report-indicator-cell{min-width:36px}.evidence-section{margin-top:12px}.evidence-title{font-size:10px;font-weight:bold;margin:0 0 7px}.evidence-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.evidence-card{border:1px solid #777;padding:6px;display:flex;gap:8px;align-items:flex-start;page-break-inside:avoid;break-inside:avoid}.evidence-photo{width:125px;height:95px;object-fit:contain;border:1px solid #aaa;padding:2px;flex-shrink:0}.evidence-caption{font-size:9px;line-height:1.4}.evidence-caption strong{display:block;margin-bottom:3px}.vehicle-report-section{page-break-inside:avoid;break-inside:avoid;margin-bottom:16px}.vehicle-report-section h3{font-size:12px;margin:10px 0 5px}</style></head><body>
-<div class="print-actions"><button onclick="window.print()" class="btn btn-primary">Cetak / Simpan PDF</button> <a class="btn btn-outline-secondary" href="<?= e($backUrl) ?>">Kembali</a></div>
-<div class="sheet"><h2>FORMULIR CEKLIST KEBERSIHAN DAN KERAPIAN <?= e(strtoupper($room['nama_ruangan'])) ?></h2><div class="meta"><span>Tanggal: <?= e(tanggal_indo($date)) ?></span></div>
+<!doctype html><html lang="id"><head><meta charset="utf-8"><title></title><link rel="stylesheet" href="../assets/css/print.css"></head><body>
+<nav class="print-actions" aria-label="Menu cetak">
+  <div class="print-actions-copy">
+    <span class="print-actions-eyebrow">DOKUMEN CHECKLIST</span>
+    <strong>Pratinjau Formulir</strong>
+    <span>Periksa dokumen sebelum mencetak atau menyimpannya sebagai PDF.</span>
+  </div>
+  <div class="print-actions-buttons">
+    <button type="button" onclick="window.print()" class="action-btn action-print">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8V3h10v5M7 17H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 14h10v7H7z"/><path d="M17 11h.01"/></svg>
+      <span>Cetak / Simpan PDF</span>
+    </button>
+    <a class="action-btn action-exit" href="<?= e($backUrl) ?>">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg>
+      <span>Keluar</span>
+    </a>
+  </div>
+</nav>
+<?php
+$roomTitle=preg_replace('/\s*\([^)]*\)\s*$/u','',(string)$room['nama_ruangan']);
+$roomSubtitle='';
+if(preg_match('/\(([^()]*)\)\s*$/u',(string)$room['nama_ruangan'],$subtitleMatch))$roomSubtitle='('.$subtitleMatch[1].')';
+?>
+<div class="sheet">
+<header class="document-heading">
+<h1>FORMULIR CEKLIST KEBERSIHAN <?= e(strtoupper($roomTitle)) ?></h1>
+<?php if($roomSubtitle!==''): ?><div class="document-subtitle"><?= e(strtoupper($roomSubtitle)) ?></div><?php endif; ?>
+<div class="document-agency">BNNK BATANG</div>
+</header>
+<div class="date-row"><strong>Tanggal:</strong><span><?= e(tanggal_indo($date)) ?></span></div>
 <?php if($isVehicle): foreach($vehicles as $v):$vid=(int)$v['id']; ?><section class="vehicle-report-section"><h3><?= e($v['nama']) ?><?= !empty($plates[$vid])?' · No. Polisi: '.e($plates[$vid]):'' ?></h3><?php print_table($items,$times,$details,$vid); ?></section><?php endforeach; else: print_table($items,$times,$details,0); endif; ?>
 <?php if($evidencePhotos): ?><section class="evidence-section"><h3 class="evidence-title">Dokumentasi Foto Bukti</h3><div class="evidence-grid"><?php foreach($evidencePhotos as $photoData): ?><div class="evidence-card"><img class="evidence-photo" src="<?= e(base_url($photoData['path'])) ?>" alt="Foto bukti"><div class="evidence-caption"><strong><?= e($photoData['indicator']) ?></strong><?php if($photoData['vehicle']): ?><?= e($photoData['vehicle']) ?><?= $photoData['plate']?' · '.e($photoData['plate']):'' ?><br><?php endif; ?>Waktu pemeriksaan: <?= e($photoData['time']) ?></div></div><?php endforeach; ?></div></section><?php endif; ?>
 <div class="notes"><strong>Catatan PJ Sarpras:</strong><div class="notes-content"><?= trim((string)($room['catatan_pj_sarpras']??''))!==''?nl2br(e($room['catatan_pj_sarpras'])):'Tidak ada catatan.' ?></div></div><div class="notes"><strong>Catatan Kasubbag Umum:</strong><div class="notes-content"><?= trim((string)($room['catatan_kasubbag_umum']??''))!==''?nl2br(e($room['catatan_kasubbag_umum'])):'Tidak ada catatan.' ?></div></div>
-<div class="signatures"><div><strong>Petugas Kebersihan</strong><div class="signature-space"></div><span><?= e($signatureNames['petugas']) ?></span></div><div><strong>PJ Sarpras</strong><div class="signature-space"></div><span><?= e($signatureNames['pj_sarpras']) ?></span></div><div><strong>Kasubbag Umum</strong><div class="signature-space"></div><span><?= e($signatureNames['kasubbag_umum']) ?></span></div></div></div><script>if(new URLSearchParams(location.search).has('print'))window.print()</script></body></html>
+<div class="signatures"><div><strong>Petugas Kebersihan</strong><div class="signature-space"></div><span><?= e($signatureNames['petugas']) ?></span></div><div><strong>PJ Sarpras</strong><div class="signature-space"></div><span><?= e($signatureNames['pj_sarpras']) ?></span></div><div><strong>Kasubbag Umum</strong><div class="signature-space"></div><span><?= e($signatureNames['kasubbag_umum']) ?></span></div></div></div><script>
+(function(){ if(new URLSearchParams(location.search).has("print")){ setTimeout(()=>window.print(),250); } })();
+</script></body></html>
